@@ -1,15 +1,40 @@
 # Reproducible Research: Peer Assessment 1
+```{r setoptions, echo=FALSE}
+opts_chunk$set(echo=TRUE)
+```
 
 
 ## Loading and preprocessing the data
-
+```{r}
+x <- read.csv(unz('activity.zip', 'activity.csv'))
+x$date <- as.Date(x$date)
+```
 
 
 ## What is mean total number of steps taken per day?
-
+```{r}
+perDay <- aggregate(x$steps, list(date=x$date), sum, na.rm=TRUE)
+hist(perDay$x, main='Histogram of total number of steps taken each day', xlab='steps')
+```
+#### mean total number of steps taken per day
+```{r}
+mean(perDay$x)
+```
+#### median total number of steps taken per day
+```{r}
+median(perDay$x)
+```
 
 
 ## What is the average daily activity pattern?
+```{r}
+perInterval <- aggregate(x$steps, list(interval=x$interval), mean, na.rm=TRUE)
+plot(perInterval, type='l', xlab='5-minute interval', ylab='average number of steps')
+```
+#### 5-minute interval with maximum number of steps
+```{r}
+perInterval$interval[which.max(perInterval$x)]
+```
 
 
 
