@@ -1,20 +1,19 @@
 # Reproducible Research: Peer Assessment 1
-```{r setoptions, echo=FALSE}
-opts_chunk$set(echo=TRUE)
-```
-
 
 ## Loading and preprocessing the data
 ```{r}
+library(lattice)
 x <- read.csv(unz('activity.zip', 'activity.csv'))
 x$date <- as.Date(x$date)
 ```
 
-
 ## What is mean total number of steps taken per day?
 ```{r}
+## summing steps for each day
 perDay <- aggregate(x$steps, list(date=x$date), sum, na.rm=TRUE)
-hist(perDay$x, main='Histogram of total number of steps taken each day', xlab='steps')
+histogram(perDay$x,
+          main='Histogram of total number of steps taken each day',
+          xlab='steps')
 ```
 #### mean total number of steps taken per day
 ```{r}
@@ -28,8 +27,13 @@ median(perDay$x)
 
 ## What is the average daily activity pattern?
 ```{r}
+## getting mean of steps for each interval
 perInterval <- aggregate(x$steps, list(interval=x$interval), mean, na.rm=TRUE)
-plot(perInterval, type='l', xlab='5-minute interval', ylab='average number of steps')
+xyplot(x ~ interval,
+       data=perInterval,
+       type='l',
+       xlab='5-minute interval',
+       ylab='average number of steps')
 ```
 #### 5-minute interval with maximum number of steps
 ```{r}
@@ -37,9 +41,52 @@ perInterval$interval[which.max(perInterval$x)]
 ```
 
 
-
 ## Imputing missing values
+#### total number of missing values
+```{r}
+missing <- is.na(x$steps)
+sum(missing)
+```
 
+#### filling missing values with mean for the same interval
+mean values are already calculated in perInterval dataset
+```{r}
+missingInterval <- x[missing, 'interval']
+meanSteps <- sapply(missingInterval,
+                    function(z) round(perInterval$x[which(perInterval$interval == z)]))
+```
 
+#### creating new dataset with filled in missing values
+```{r}
+y <- x
+y[missing, 'steps'] <- meanSteps
+```
+
+#### histogram, mean and median for dataset with filled in missing values
+```{r}
+perDayY <- aggregate(y$steps, list(date=y$date), sum)
+histogram(perDayY$x,
+          main='Histogram of total number of steps taken each day',
+          xlab='steps')
+mean(perDayY$x)
+median(perDayY$x)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+getDayType <- function(z){
+        d = weekdays(z)
+        if(d == 'Sunday' || d == 'Saturday') 'weekend'
+        else 'weekday'
+}
+y$dayType <- factor(sapply(y$date, getDayType))
+
+## getting mean of steps for each interval and each day type
+perDayType <- aggregate(y$steps, list(interval=y$interval, dayType=y$dayType), mean)
+xyplot(x ~ interval | dayType,
+       data=perDayType,
+       type='l',
+       ylab='Number of steps',
+       layout=c(1, 2))
+```
