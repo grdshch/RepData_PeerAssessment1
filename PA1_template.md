@@ -78,8 +78,8 @@ sum(missing)
 ```
 
 
-#### filling missing values with mean for the same interval
-mean values are already calculated in perInterval dataset
+#### filling missing values with mean for the same interval across all days
+mean values have been calculated already for perInterval dataset
 
 ```r
 missingInterval <- x[missing, "interval"]
@@ -100,11 +100,13 @@ y[missing, "steps"] <- meanSteps
 
 ```r
 perDayY <- aggregate(y$steps, list(date = y$date), sum)
-histogram(perDayY$x, main = "Histogram of total number of steps taken each day", 
+histogram(perDayY$x, main = "Histogram of total number of steps with filled missing values", 
     xlab = "steps")
 ```
 
 ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+
+#### mean total number of steps with filled in missing values
 
 ```r
 mean(perDayY$x)
@@ -114,6 +116,8 @@ mean(perDayY$x)
 ## [1] 10766
 ```
 
+#### median total number of steps with filled in missing values
+
 ```r
 median(perDayY$x)
 ```
@@ -122,9 +126,9 @@ median(perDayY$x)
 ## [1] 10762
 ```
 
+As we can see, mean total number has increased after filling missing values, median has become closer to the mean value.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-
 
 ```r
 getDayType <- function(z) {
@@ -141,5 +145,5 @@ xyplot(x ~ interval | dayType, data = perDayType, type = "l", ylab = "Number of 
     layout = c(1, 2))
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 

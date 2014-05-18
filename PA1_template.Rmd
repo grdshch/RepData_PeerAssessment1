@@ -48,8 +48,8 @@ missing <- is.na(x$steps)
 sum(missing)
 ```
 
-#### filling missing values with mean for the same interval
-mean values are already calculated in perInterval dataset
+#### filling missing values with mean for the same interval across all days
+mean values have been calculated already for perInterval dataset
 ```{r}
 missingInterval <- x[missing, 'interval']
 meanSteps <- sapply(missingInterval,
@@ -66,14 +66,20 @@ y[missing, 'steps'] <- meanSteps
 ```{r}
 perDayY <- aggregate(y$steps, list(date=y$date), sum)
 histogram(perDayY$x,
-          main='Histogram of total number of steps taken each day',
+          main='Histogram of total number of steps with filled missing values',
           xlab='steps')
+```
+#### mean total number of steps with filled in missing values
+```{r}
 mean(perDayY$x)
+```
+#### median total number of steps with filled in missing values
+```{r}
 median(perDayY$x)
 ```
+As we can see, mean total number has increased after filling missing values, median has become closer to the mean value.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-
 ```{r}
 getDayType <- function(z){
         d = weekdays(z)
